@@ -75,7 +75,7 @@ class CashlessSlaveStatus(CashlessSlaveAnswer):
             return waiting_payment
         return None
 
-def match_cashless_slave_answer_message(text: str):
+def match_cashless_slave_answer_message(text: str) -> CashlessSlaveAnswer | None:
     enums = (CashlessSlaveError, CashlessSlaveUnknown, CashlessSlaveVend, CashlessSlaveStatus)
     for answer in enums:
         if result := answer.match_message(text):

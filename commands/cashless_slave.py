@@ -15,7 +15,7 @@ class CommandsCashlessSlave(ABCMDBClient, ABC):
 
         :param amount:
         """
-        self.__send_message_and_handle_result(f"C,START,{amount}".encode(self.get_encoding()))
+        return self.__send_message_and_handle_result(f"C,START,{amount}".encode(self.get_encoding()))
 
     def approve_vending_request(self, amount: int):
         """
@@ -24,7 +24,7 @@ class CommandsCashlessSlave(ABCMDBClient, ABC):
 
         :param amount:
         """
-        self.__send_message_and_handle_result(f"C,VEND,{amount}".encode(self.get_encoding()))
+        return self.__send_message_and_handle_result(f"C,VEND,{amount}".encode(self.get_encoding()))
 
     def stop_inactive_vend_session(self):
         """
@@ -32,14 +32,14 @@ class CommandsCashlessSlave(ABCMDBClient, ABC):
         in Idle/Authorization First mode) but was not followed up by the VMC,
         meaning that the credit was still not requested from the Cashless Peripheral.
         """
-        self.__send_message_and_handle_result(b"C,STOP")
+        return self.__send_message_and_handle_result(b"C,STOP")
 
     def stop_active_vend_session(self):
         """
         (Deny Credit Request)
         An active vend session means that the Credit has already been requested by the Master, but not confirmed by the peripheral.
         """
-        self.__send_message_and_handle_result(b"C,VEND,-1")
+        return self.__send_message_and_handle_result(b"C,VEND,-1")
 
     def accept_revalue(self):
         """
@@ -49,10 +49,10 @@ class CommandsCashlessSlave(ABCMDBClient, ABC):
         Once the Revalue is requested to the Cashless Peripheral,
         the VMC expects only an Accept or a Deny response.
         """
-        self.__send_message_and_handle_result(b"C,REVALUE,1")
+        return self.__send_message_and_handle_result(b"C,REVALUE,1")
 
     def deny_revalue(self):
-        self.__send_message_and_handle_result(b"C,REVALUE,0")
+       return  self.__send_message_and_handle_result(b"C,REVALUE,0")
 
     def display_message(self, text: Annotated[str, MaxLen(32)]):
         """
@@ -63,11 +63,11 @@ class CommandsCashlessSlave(ABCMDBClient, ABC):
         :param text:
         """
         assert len(text) <= 32
-        self.send_raw_message(f"C,DISPLAY,{text}".encode(self.get_encoding()))
+        return self.send_raw_message(f"C,DISPLAY,{text}".encode(self.get_encoding()))
 
     def report_cash_sale(self, value: float, product_id: int):
         value = "{0:.2f}".format(value)
-        self.send_raw_message(f"C,SALE,{value},{product_id}".encode(self.get_encoding()))
+        return self.send_raw_message(f"C,SALE,{value},{product_id}".encode(self.get_encoding()))
 
     def __send_message_and_handle_result(self, data: bytes):
         res = self.send_raw_message_with_response(data)
