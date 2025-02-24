@@ -39,7 +39,8 @@ class CashlessMasterStatus(CashlessAnswer):
 def match_cashless_master_answer_message(text: str) -> CashlessAnswer | None:
     enums = (CashlessMasterError, CashlessMasterStatus)
     for answer in enums:
-        if result := answer.match_message(text):
+        result = answer.match_message(text)
+        if result:
             return result
     return None
 

@@ -54,7 +54,8 @@ class CashlessStatus(CashlessAnswer):
 def match_cashless_slave_answer_message(text: str) -> CashlessAnswer | None:
     enums = (CashlessError, CashlessUnknown, CashlessVend, CashlessStatus)
     for answer in enums:
-        if result := answer.match_message(text):
+        result = answer.match_message(text)
+        if result:
             return result
     return None
 
