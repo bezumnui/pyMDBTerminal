@@ -1,10 +1,14 @@
+import logging
 import os.path
+from asyncio import QueueEmpty
 
 import serial
 from serial.serialutil import PARITY_NONE
 
 from pyOpticwash.py_mdb_terminal.abstract.abc_client import ABCMDBClient
-from pyOpticwash.py_mdb_terminal.comamnds.commands_commutator import CommandsCommutator
+from pyOpticwash.py_mdb_terminal.commands.commands_commutator import CommandsCommutator
+from pyOpticwash.py_mdb_terminal.commands.structures.master.cashless_master_answer import CashlessMasterStatus
+from pyOpticwash.py_mdb_terminal.commands.structures.master.cashless_master_parameter import CashlessMasterParameter
 from pyOpticwash.py_mdb_terminal.mdb_listener import MDBListener
 
 
@@ -22,6 +26,7 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
         self.ser.port = port
         self.running = False
         self.encoding = "ascii"
+        self.software_version: str = ""
 
     def check_port_availability(self):
         return os.path.exists(self.port)
@@ -36,6 +41,8 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
         self.running = True
         self.ser.open()
         self.listener.start()
+        self.software_version = self.get_version().software_version
+
 
     def stop(self, block=True):
         """
@@ -49,20 +56,26 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
 
     def send_raw_message_with_response(self, message: bytes) -> str:
         """
-        :param message:
-        :raises PortNotOpenError the client is not started
+        :param message:\
+        :raises PortNotOpenError the client is not started.
         """
         self.listener.lock_queue()
         self.send_raw_message(message)
-        return self.listener.get_last_message(5)
+        try:
+            return self.listener.get_last_message(5)
+        except QueueEmpty as e:
+            raise TimeoutError("Failed to receive a response from the MDB device") from e
 
     def send_raw_message(self, message: bytes):
         """
-        :param message:
-        :raises PortNotOpenError the client is not started
+        :param message:\
+        :raises PortNotOpenError the client is not started.
         """
         self.ser.write(message + b"\n")
         self.ser.flush()
+
+    def get_software_version(self) -> str:
+        return self.software_version
 
     def get_encoding(self):
         return self.encoding
@@ -70,3 +83,34 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
     def get_serial(self):
         return self.ser
 
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+    client = MDBClient("/dev/tty.usbmodem01")
+    if not client.check_port_availability():
+        print("Port is not available.")
+        exit(1)
+
+    logging.info(f"Port {client.port} is available. Starting the client.")
+    client.start()
+    logging.info(f"Connection PC-MDB established. Software version: {client.software_version}")
+    logging.info("Requesting the HW version...")
+
+    hw = client.get_hardware_info()
+    logging.info(f"SW: {client.software_version}, HW: {hw.hardware_version}")
+
+    client.set_response_timout(1000)
+    client.set_cashless_master_parameter(CashlessMasterParameter.VMCSlaveAddress, "0x10")
+    initialize_answer, initialize_response = client.master_enable_always_idle()
+    # if initialize_answer != CashlessMasterStatus.Initialized:
+    #     logging.error(f"Failed to initialize the device. Response: {initialize_answer}")
+    #
+    #     exit(1)
+
+    client.master_request_credit(10, 1)
+    # input("Press enter to stop the client\n")
+    input("Press enter to stop the client\n")
+    client.master_disable()
+    logging.info("Stopping the client.")
+
+    client.stop()

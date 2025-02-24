@@ -1,8 +1,8 @@
 from abc import ABC
 
 from pyOpticwash.py_mdb_terminal.abstract.abc_client import ABCMDBClient
-from pyOpticwash.py_mdb_terminal.comamnds.structures.hardware import Hardware
-from pyOpticwash.py_mdb_terminal.comamnds.structures.version import Version
+from pyOpticwash.py_mdb_terminal.commands.structures.misc.hardware import Hardware
+from pyOpticwash.py_mdb_terminal.commands.structures.misc.version import Version
 
 
 class CommandsMisc(ABCMDBClient, ABC):

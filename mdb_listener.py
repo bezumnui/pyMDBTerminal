@@ -2,7 +2,7 @@ import logging
 import queue
 import threading
 
-from pyOpticwash.py_mdb_terminal.comamnds.commands_commutator import CommandsCommutator
+from pyOpticwash.py_mdb_terminal.commands.commands_commutator import CommandsCommutator
 
 
 class MDBListener:
@@ -28,8 +28,8 @@ class MDBListener:
     def __poll(self):
         serial = self.__client.get_serial()
         while self.__active:
-            if serial.readable():
-                raw_data = serial.readall().decode(self.encoding)
+            if serial.in_waiting:
+                raw_data = serial.read_all().decode(self.encoding)
                 self.log(logging.DEBUG, f"Received a data from polling: {raw_data}")
                 if self.__accepting_lock.locked():
                     self.__queue.put(raw_data, False)

@@ -2,8 +2,8 @@ from abc import ABC
 from typing import Annotated
 
 from pyOpticwash.py_mdb_terminal.abstract.abc_client import ABCMDBClient
-from pyOpticwash.py_mdb_terminal.comamnds.structures.annotations import MaxLen
-from pyOpticwash.py_mdb_terminal.comamnds.structures.cashless_slave_answer import match_cashless_slave_answer_message
+from pyOpticwash.py_mdb_terminal.commands.structures.annotations import MaxLen
+from pyOpticwash.py_mdb_terminal.commands.structures.slave.cashless_slave_answer import match_cashless_slave_answer_message
 
 
 class CommandsCashlessSlave(ABCMDBClient, ABC):
