@@ -1,8 +1,8 @@
 import logging
 from abc import ABC
 
-from pyOpticwash.py_mdb_terminal.abstract.abc_client import ABCMDBClient
-from pyOpticwash.py_mdb_terminal.commands.structures.master.cashless_master_answer import \
+from py_mdb_terminal.abstract.abc_client import ABCMDBClient
+from py_mdb_terminal.commands.structures.master.cashless_master_answer import \
     match_cashless_master_answer_message
 
 

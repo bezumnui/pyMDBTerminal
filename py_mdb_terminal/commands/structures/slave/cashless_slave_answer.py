@@ -1,5 +1,5 @@
 import dataclasses
-from pyOpticwash.py_mdb_terminal.commands.structures.cashless_answer import CashlessAnswer, answer_prefix
+from py_mdb_terminal.commands.structures.cashless_answer import CashlessAnswer, answer_prefix
 
 
 @answer_prefix("c,ERR")

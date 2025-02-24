@@ -1,9 +1,9 @@
 from abc import ABC
 
-from pyOpticwash.py_mdb_terminal.abstract.abc_client import ABCMDBClient
-from pyOpticwash.py_mdb_terminal.commands.structures.annotations import ValueRange
-from pyOpticwash.py_mdb_terminal.commands.structures.master.cashless_master_parameter import CashlessMasterParameter
-from pyOpticwash.py_mdb_terminal.commands.structures.slave.cashless_slave_parameter import CashlessSlaveParameter
+from py_mdb_terminal.abstract.abc_client import ABCMDBClient
+from py_mdb_terminal.commands.structures.annotations import ValueRange
+from py_mdb_terminal.commands.structures.master.cashless_master_parameter import CashlessMasterParameter
+from py_mdb_terminal.commands.structures.slave.cashless_slave_parameter import CashlessSlaveParameter
 
 
 class CommandsConfiguration(ABCMDBClient, ABC):

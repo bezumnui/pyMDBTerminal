@@ -1,4 +1,4 @@
-from pyOpticwash.py_mdb_terminal.commands.structures.cashless_answer import answer_prefix, CashlessAnswer
+from py_mdb_terminal.commands.structures.cashless_answer import answer_prefix, CashlessAnswer
 
 
 @answer_prefix("d,ERR")

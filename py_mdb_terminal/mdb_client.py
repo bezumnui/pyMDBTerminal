@@ -5,11 +5,10 @@ from asyncio import QueueEmpty
 import serial
 from serial.serialutil import PARITY_NONE
 
-from pyOpticwash.py_mdb_terminal.abstract.abc_client import ABCMDBClient
-from pyOpticwash.py_mdb_terminal.commands.commands_commutator import CommandsCommutator
-from pyOpticwash.py_mdb_terminal.commands.structures.master.cashless_master_answer import CashlessMasterStatus
-from pyOpticwash.py_mdb_terminal.commands.structures.master.cashless_master_parameter import CashlessMasterParameter
-from pyOpticwash.py_mdb_terminal.mdb_listener import MDBListener
+from py_mdb_terminal.abstract.abc_client import ABCMDBClient
+from py_mdb_terminal.commands.commands_commutator import CommandsCommutator
+from py_mdb_terminal.commands.structures.master.cashless_master_parameter import CashlessMasterParameter
+from py_mdb_terminal.mdb_listener import MDBListener
 
 
 class MDBClient(CommandsCommutator, ABCMDBClient):

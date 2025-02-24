@@ -2,7 +2,7 @@ import logging
 import queue
 import threading
 
-from pyOpticwash.py_mdb_terminal.commands.commands_commutator import CommandsCommutator
+from py_mdb_terminal.commands.commands_commutator import CommandsCommutator
 
 
 class MDBListener:
