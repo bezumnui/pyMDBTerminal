@@ -41,6 +41,7 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
         self.ser.open()
         self.listener.start()
         self.software_version = self.get_version().software_version
+        logging.info(f"MDBClient started! Software version: {self.software_version}")
 
 
     def stop(self, block=True):
@@ -61,15 +62,19 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
         self.listener.lock_queue()
         self.send_raw_message(message)
         try:
-            return self.listener.get_last_message(5)
+            return self.listener.get_last_message(5)[:-2]
         except QueueEmpty as e:
             raise TimeoutError("Failed to receive a response from the MDB device") from e
+
+
 
     def send_raw_message(self, message: bytes):
         """
         :param message:\
         :raises PortNotOpenError the client is not started.
         """
+        logging.debug("Sending message: " + str(message))
+
         self.ser.write(message + b"\n")
         self.ser.flush()
 

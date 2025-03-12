@@ -40,7 +40,10 @@ class CommandsCashlessMaster(ABCMDBClient, ABC):
         """
         return self.__send_message_and_handle_result(b"D,READER,1")
 
-    def master_request_credit(self, amount: float, product: int):
+    def master_stop_polling(self):
+        return self.__send_message_and_handle_result(b"D,READER,0")
+
+    def master_request_credit(self, amount: str, product: str):
         """
         The following command is used to send a request to the Cashless Slave. When the Cashless Master
         is configured in "Idle" Mode, this command should be preceded by a start session command
@@ -51,7 +54,7 @@ class CommandsCashlessMaster(ABCMDBClient, ABC):
         :return:
         """
 
-        amount = "{0:.2f}".format(amount)
+        # amount = "{0:.2f}".format(amount)
         return self.__send_message_and_handle_result(f"D,REQ,{amount},{product}".encode(self.get_encoding()))
 
 
@@ -76,7 +79,14 @@ class CommandsCashlessMaster(ABCMDBClient, ABC):
         if product_id and not version_supported:
             logging.error("Product ID is not supported in this version. Proceeding without it.")
             return self.__send_message_and_handle_result(b"D,END")
+        return self.__send_message_and_handle_result(b"D,END")
 
+
+    def send_raw(self, data: bytes):
+        """
+        Send a raw command to the Cashless Master
+        """
+        return self.__send_message_and_handle_result(data)
 
     def master_end_and_revert_transaction(self):
         """
@@ -88,4 +98,5 @@ class CommandsCashlessMaster(ABCMDBClient, ABC):
     def __send_message_and_handle_result(self, data: bytes):
         res = self.send_raw_message_with_response(data)
         answer = match_cashless_master_answer_message(res)
+        logging.debug(f"Got response: {answer}")
         return answer, res
