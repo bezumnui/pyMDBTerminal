@@ -51,8 +51,12 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
         """
         if not self.running:
             raise ValueError("The serial is not in use.")
+
         self.listener.stop(block=block)
         self.ser.close()
+        self.running = True
+        logging.info(f"MDBClient stopped")
+
 
     def send_raw_message_with_response(self, message: bytes) -> str:
         """
