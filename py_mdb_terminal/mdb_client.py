@@ -54,7 +54,7 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
 
         self.listener.stop(block=block)
         self.ser.close()
-        self.running = True
+        self.running = false
         logging.info(f"MDBClient stopped")
 
 
