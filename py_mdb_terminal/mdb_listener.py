@@ -10,18 +10,19 @@ class MDBListener:
         self.__client = mdb_client
         self.__queue = queue.Queue(5)
         self.__active = False
-        self.__polling_thread = threading.Thread(target=self.__poll)
+        self.__polling_thread: threading.Thread = None
         self.__accepting_lock = threading.Lock()
         self.encoding = "ascii"
 
 
     def start(self):
+        self.__polling_thread = threading.Thread(target=self.__poll)
         self.__active = True
         self.__polling_thread.start()
 
     def stop(self, block=True):
         self.__active = False
-        if block:
+        if block and self.__polling_thread:
             self.__polling_thread.join()
 
 
