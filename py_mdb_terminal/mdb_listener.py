@@ -1,6 +1,7 @@
 import logging
 import queue
 import threading
+from datetime import datetime
 
 from py_mdb_terminal.commands.commands_commutator import CommandsCommutator
 
@@ -13,6 +14,8 @@ class MDBListener:
         self.__polling_thread: threading.Thread = None
         self.__accepting_lock = threading.Lock()
         self.encoding = "ascii"
+        self.__logger = logging.getLogger(name=MDBListener.__class__.__name__)
+        self.__setup_logging()
 
 
     def start(self):
@@ -25,20 +28,44 @@ class MDBListener:
         if block and self.__polling_thread:
             self.__polling_thread.join()
 
+    def __setup_logging(self):
+        self.__logger.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler(datetime.now().strftime("mdb_listener_log_%d.%m.%Y_%H.%M.%S"))
+        stream_handler = logging.StreamHandler()
+
+        file_handler.setLevel(logging.DEBUG)
+        stream_handler.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
+        stream_handler.setFormatter(formatter)
+
+        self.__logger.addHandler(file_handler)
+        self.__logger.addHandler(stream_handler)
 
     def __poll(self):
         serial = self.__client.get_serial()
         while self.__active:
-            if serial.in_waiting:
+            if serial.closed:
+                self.__logger.log(logging.CRITICAL, f"MDB adapter has closed the connection.")
+                self.stop(True)
+
+            elif serial.in_waiting:
                 raw_data = serial.read_all().decode(self.encoding)
-                self.log(logging.DEBUG, f"Received a data from polling: {raw_data}")
-                if self.__accepting_lock.locked():
+                self.__logger.log(logging.DEBUG, f"Received data from polling: {raw_data}")
+
+                if raw_data.startswith("x"):
+                    self.log_telemetry(raw_data)
+                elif self.__accepting_lock.locked():
                     self.__queue.put(raw_data, False)
                 else:
                     self.handle_async_messages(raw_data)
 
-    def handle_async_messages(self, raw_data: bytes):
-        self.log(logging.INFO, f"Handling unawaitable data: {raw_data}")
+    def handle_async_messages(self, raw_data: str):
+        self.__logger.log(logging.INFO, f"Handling unawaitable data: {raw_data}")
+
+    def log_telemetry(self, raw_data: str):
+        self.__logger.info(raw_data)
 
     def lock_queue(self):
         """
@@ -56,7 +83,3 @@ class MDBListener:
         data = self.__queue.get(timeout=timeout)
         self.__accepting_lock.release_lock()
         return data
-
-    @staticmethod
-    def log(level: int, message: str):
-        logging.log(level, f"MDBListener: {message}")
