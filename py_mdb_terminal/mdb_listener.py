@@ -52,7 +52,6 @@ class MDBListener:
         stream_handler.setFormatter(formatter)
 
         self.__logger.addHandler(file_handler)
-        self.__logger.addHandler(stream_handler)
 
     def __poll(self):
         serial = self.__client.get_serial()
