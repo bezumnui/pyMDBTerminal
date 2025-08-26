@@ -42,14 +42,11 @@ class MDBListener:
             backupCount=5
         )
 
-        stream_handler = logging.StreamHandler()
 
         file_handler.setLevel(logging.DEBUG)
-        stream_handler.setLevel(logging.DEBUG)
 
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler.setFormatter(formatter)
-        stream_handler.setFormatter(formatter)
 
         self.__logger.addHandler(file_handler)
 
