@@ -58,10 +58,10 @@ class MDBListener:
                 self.stop(True)
 
             elif serial.in_waiting:
-                raw_data = serial.read_all().decode(self.encoding)
+                raw_data = serial.read_until(b"\r\n").decode(self.encoding)
                 self.__logger.log(logging.DEBUG, f"Received data from polling: {raw_data}")
 
-                if raw_data.startswith("x"):
+                if raw_data.lower().startswith("x"):
                     self.log_telemetry(raw_data)
                 elif self.__accepting_lock.locked():
                     self.__queue.put(raw_data, False)
