@@ -31,7 +31,10 @@ class MDBListener:
 
     def __setup_logging(self):
         self.__logger.setLevel(logging.DEBUG)
-        os.mkdir("log")
+
+        if not os.path.exists("log"):
+            os.mkdir("log")
+
         file_handler = logging.FileHandler(datetime.now().strftime("log/mdb_listener_log_%d.%m.%Y_%H.%M.%S"))
         stream_handler = logging.StreamHandler()
 
