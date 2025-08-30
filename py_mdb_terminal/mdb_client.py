@@ -39,9 +39,11 @@ class MDBClient(CommandsCommutator, ABCMDBClient):
             raise ValueError("The serial is already opened.")
         self.running = True
         self.ser.open()
+        logging.info(f"MDBClient: serial is open")
         self.listener.start()
+        logging.info(f"MDBClient: listener has started.")
         self.software_version = self.get_version().software_version
-        logging.info(f"MDBClient started! Software version: {self.software_version}")
+        logging.info(f"MDBClient: started! Software version: {self.software_version}")
 
 
     def stop(self, block=True):
